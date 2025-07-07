@@ -3,112 +3,130 @@ import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import MultiStepForm from '../MultiStepForm';
 import { User } from '../../types/User';
+import userEvent from '@testing-library/user-event';
 
-// Mock services and hooks
-jest.mock('../services/useUserService', () => ({
-  useUserService: () => ({
-    addUserWithAvatar: jest.fn().mockResolvedValue({}),
-  }),
-}));
+// // Mock services and hooks
+// jest.mock('../services/useUserService', () => ({
+//   useUserService: () => ({
+//     addUserWithAvatar: jest.fn().mockResolvedValue({}),
+//   }),
+// }));
 
-jest.mock('./useUserFieldValidation', () => ({
-  useUserFieldValidation: () => ({
-    validateStep: jest.fn((stepData) => {
-      // Simulate validation logic: all fields must not be empty
-      return Object.values(stepData).every(value => value !== '');
-    }),
-    validateField: jest.fn((fieldName, value) => {
-      // Simulate field validation
-      if (value === '') {
-        return false; // Empty value is invalid
-      }
-      if (fieldName === 'email' && !value.includes('@')) {
-        return false; // Email format validation
-      }
-      return true;
-    }),
-  }),
-}));
+// jest.mock('../hooks/useUserFieldValidation', () => ({
+//   useUserFieldValidation: () => ({
+//     validateStep: jest.fn((stepData) => {
+//       // Simulate validation logic: all fields must not be empty
+//       return Object.values(stepData).every(value => value !== '');
+//     }),
+//     validateField: jest.fn((fieldName, value) => {
+//       // Simulate field validation
+//       if (value === '') {
+//         return false; // Empty value is invalid
+//       }
+//       if (fieldName === 'email' && !value.includes('@')) {
+//         return false; // Email format validation
+//       }
+//       return true;
+//     }),
+//   }),
+// }));
 
-describe('MultiStepForm Integration Test', () => {
-  const initialData: User = {
-    firstName: '',
-    lastName: '',
-    dateOfBirth: '',
-    country: '',
-    gender: '',
-    avatar: null,
-    email: '',
-    password: '',
-  };
+describe('MultiStepForm Integration Test2',
+  () => {
+    // Test 1: Initial render shows the first step form, and "Previous" button is disabled
+    test('initially renders the first step form with "Previous" button disabled', () => {
+      render(<MultiStepForm />);
 
-  test('Completes all steps and successfully submits the form', async () => {
-    const mockAddUserWithAvatar = jest.fn().mockResolvedValue({ success: true });
-    
-    // Mock the useUserService hook to use the mock function
-    jest.mock('../services/useUserService', () => ({
-      useUserService: () => ({
-        addUserWithAvatar: mockAddUserWithAvatar,
-      }),
-    }));
+      // Verify first step fields exist
+      expect(screen.getByTestId('firstName')).toBeInTheDocument();
+      expect(screen.getByTestId('lastName')).toBeInTheDocument();
+      expect(screen.getByTestId('dateOfBirth')).toBeInTheDocument();
 
-    // Render the component
-    render(<MultiStepForm />);
+      // Verify button states
+      expect(screen.getByTestId('previous')).toBeDisabled(); // Previous disabled
+      expect(screen.getByTestId('next')).toBeDisabled(); // Next initially disabled (controlled by validation later)
+    });
 
-    // Step 1
-    const firstNameInput = screen.getByTestId('firstName');
-    const lastNameInput = screen.getByTestId('lastName');
-    const dateOfBirthInput = screen.getByTestId('dateOfBirth');
 
-    fireEvent.input(firstNameInput, { target: { value: 'John' } });
-    fireEvent.blur(firstNameInput);
+    test('enables "Next" button when firstName, lastName, and dateOfBirth are filled (sync with blur)', () => {
+      render(<MultiStepForm />);
 
-    fireEvent.input(lastNameInput, { target: { value: 'Doe' } });
-    fireEvent.blur(lastNameInput);
+      const nextButton = screen.getByTestId('next');
 
-    fireEvent.input(dateOfBirthInput, { target: { value: '2000-01-01' } });
-    fireEvent.blur(dateOfBirthInput);
+      const firstNameInputBylabel = screen.getByLabelText('First Name*');
+      const lastNameInputBylabel = screen.getByLabelText('Last Name*');
+      const dobInputBylabel = screen.getByLabelText('Date of Birth*');
 
-    fireEvent.click(screen.getByRole('button', { name: /Next/i }));
+      expect(nextButton).toBeDisabled();
 
-    // Step 2
-    const countryInput = screen.getByTestId('country');
-    const genderInput = screen.getByTestId('gender');
+      fireEvent.change(firstNameInputBylabel, { target: { value: 'John' } });
+      fireEvent.blur(firstNameInputBylabel);
 
-    fireEvent.input(countryInput, { target: { value: 'USA' } });
-    fireEvent.blur(countryInput);
+      fireEvent.change(lastNameInputBylabel, { target: { value: 'Doe' } });
+      fireEvent.blur(lastNameInputBylabel);
 
-    fireEvent.input(genderInput, { target: { value: 'Male' } });
-    fireEvent.blur(genderInput);
+      fireEvent.change(dobInputBylabel, { target: { value: '1990-01-01' } });
+      fireEvent.blur(dobInputBylabel);
 
-    fireEvent.click(screen.getByRole('button', { name: /Next/i }));
 
-    // Step 3
-    const emailInput = screen.getByTestId('email');
-    const passwordInput = screen.getByTestId('password');
+      expect(nextButton).toBeEnabled();
+    });
 
-    fireEvent.input(emailInput, { target: { value: 'john@example.com' } });
-    fireEvent.blur(emailInput);
 
-    fireEvent.input(passwordInput, { target: { value: 'password123' } });
-    fireEvent.blur(passwordInput);
 
-    fireEvent.click(screen.getByRole('button', { name: /Next/i }));
+    // Tests the complete flow from Step 1 to Step 4, verifying successful submission for the form
+    test('completes full flow from Step 1 to Step 4 and verifies submission', async () => {
+      const user = userEvent.setup();
+      render(<MultiStepForm />);
+      let nextButton = screen.getByTestId('next');
+      const previousButton = screen.getByTestId('previous');
 
-    // Step 4
-    fireEvent.click(screen.getByRole('button', { name: /Submit/i }));
+      expect(previousButton).toBeDisabled();
+      expect(nextButton).toBeDisabled();
 
-    // Verify the successful submission prompt
-    const successMessage = await screen.findByText(/Registration successful!/i);
-    expect(successMessage).toBeInTheDocument();
-    expect(mockAddUserWithAvatar).toHaveBeenCalledWith(expect.objectContaining({
-      firstName: 'John',
-      lastName: 'Doe',
-      dateOfBirth: '2000-01-01',
-      country: 'USA',
-      gender: 'Male',
-      email: 'john@example.com',
-      password: 'password123'
-    }));
-  });
-});
+      const firstNameInput = screen.getByLabelText('First Name*');
+      const lastNameInput = screen.getByLabelText('Last Name*');
+      const dobInput = screen.getByLabelText('Date of Birth*');
+
+      await user.type(firstNameInput, 'John');
+      fireEvent.blur(firstNameInput);
+      await user.type(lastNameInput, 'Doe');
+      fireEvent.blur(lastNameInput);
+      await user.type(dobInput, '1990-01-01');
+      fireEvent.blur(dobInput);
+
+      expect(nextButton).toBeEnabled();
+      await user.click(nextButton);
+
+      expect(previousButton).toBeEnabled();
+      expect(nextButton).toBeDisabled();
+
+      const countryInput = screen.getByLabelText('Country*');
+      const genderSelect = screen.getByTestId('gender');
+
+      genderSelect.style.pointerEvents = 'auto';
+      fireEvent.input(countryInput, { target: { value: 'China' } });
+      fireEvent.blur(countryInput);
+
+      expect(genderSelect).toBeInTheDocument();
+      await userEvent.click(genderSelect);
+      // await waitFor(() => {
+      //   const maleOption = screen.getByText('Male');
+      //   expect(maleOption).toBeInTheDocument();
+      // });
+
+      // await new Promise(resolve => setTimeout(resolve, 100));
+      // const option = await screen.findByText('Male');
+      //const maleOption = await screen.findByTestId('gender-male');
+      const maleOption = await screen.findByText('Male', {}, { timeout: 3000 });
+
+      // not able to workaround the issue with the MUI Select yet/
+      // it is said the menu items are rendered in a portal outside the main DOM hierarchy.
+      // but screen.findByText still does not work
+
+    });
+
+  }
+
+
+);

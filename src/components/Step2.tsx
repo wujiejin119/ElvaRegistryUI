@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StepErrors, StepProps, User } from '../types/User';
 import { Box, TextField, Select, MenuItem, FormControl, InputLabel, Input, FormHelperText } from '@mui/material';
-import { useUserFieldValidation } from './useUserFieldValidation';
+import { useUserFieldValidation } from '../hooks/useUserFieldValidation';
 
 
 const Step2 = ({ user, handleChange, onBur }: StepProps) => {
@@ -35,12 +35,11 @@ const Step2 = ({ user, handleChange, onBur }: StepProps) => {
   return (
     <Box component="form" noValidate>
       <TextField
-        label="Country"
+        label="Country*"
         value={user.country}
         onChange={(e) => handleChange('country', e.target.value.trim())}
         fullWidth
         margin="normal"
-        required
         onBlur={handleBlur('country')}
         helperText={errors.country ? 'Country is required' : ''}
         error={errors.country}
@@ -51,7 +50,6 @@ const Step2 = ({ user, handleChange, onBur }: StepProps) => {
           value={user.gender}
           onChange={(e) => handleChange('gender', e.target.value.trim())}
           displayEmpty
-          required
           fullWidth
           inputProps={{ 'aria-label': 'Without label' }}
           sx={{ textAlign: 'left' }}
@@ -62,8 +60,8 @@ const Step2 = ({ user, handleChange, onBur }: StepProps) => {
           <MenuItem value="" disabled>
             Gender*
           </MenuItem>
-          <MenuItem value="Male">Male</MenuItem>
-          <MenuItem value="Female">Female</MenuItem>
+          <MenuItem value="Male" data-testid="male">Male</MenuItem>
+          <MenuItem value="Female" data-testid="female">Female</MenuItem>
         </Select>
       </Box>
       <FormControl fullWidth margin="normal">

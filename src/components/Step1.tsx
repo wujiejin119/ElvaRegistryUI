@@ -1,7 +1,7 @@
 import { Box, TextField } from "@mui/material";
 import { StepErrors, StepProps, User } from "../types/User";
 import { useState } from "react";
-import { useUserFieldValidation } from "./useUserFieldValidation";
+import { useUserFieldValidation } from "../hooks/useUserFieldValidation";
 
 
 const Step1 = ({ user, handleChange, onBur }: StepProps) => {
@@ -41,7 +41,7 @@ const Step1 = ({ user, handleChange, onBur }: StepProps) => {
         onBlur={handleBlur('lastName')}
         helperText={errors.lastName ? 'Last Name is required' : ''}
         error={errors.lastName}
-       data-testid="lastName"
+        data-testid="lastName"
       />
       <TextField
         label="Date of Birth*"

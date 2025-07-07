@@ -8,7 +8,7 @@ import { StepErrors, User } from '../types/User';
 import { Box, Button, Card, CardContent, CardHeader, styled } from '@mui/material';
 import { useUserService } from '../services/useUserService';
 import ResultPage from './ResultPage';
-import { useUserFieldValidation } from './useUserFieldValidation';
+import { useUserFieldValidation } from '../hooks/useUserFieldValidation';
 
 const CenteredBox = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -179,7 +179,7 @@ const MultiStepForm = (props: MultiStepFormProps): JSX.Element => {
             variant="outlined"
             onClick={prevStep}
             disabled={step <= 1}
-            data-testid="pervious">
+            data-testid="previous">
             Previous
           </Button>
           <Button

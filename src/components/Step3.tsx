@@ -1,7 +1,7 @@
 import { StepErrors, StepProps, User } from '../types/User';
 import { Box, TextField } from '@mui/material';
 import React, { useState } from 'react';
-import { useUserFieldValidation } from './useUserFieldValidation';
+import { useUserFieldValidation } from '../hooks/useUserFieldValidation';
 
 const Step3 = ({ user, handleChange, onBur }: StepProps) => {
   const [errors, setErrors] = useState<StepErrors>({});
