@@ -1,27 +1,18 @@
 import React, { useState } from 'react';
-import { StepErrors, StepProps } from '../types/User';
+import { StepErrors, StepProps, User } from '../types/User';
 import { Box, TextField, Select, MenuItem } from '@mui/material';
+import { useUserFieldValidation } from './useUserFieldValidation';
 
 
 const Step2 = ({ user, handleChange, onBur }: StepProps) => {
   const [errors, setErrors] = useState<StepErrors>({});
 
-  const handleBlur = (field: keyof typeof user) => () => {
-    let isValid = true;
+  const { validateField } = useUserFieldValidation();
 
-    switch (field) {
-      case 'country':
-        isValid = !!user.country;
-        break;
-      case 'gender':
-        isValid = !!user.gender;
-        break;
-      default:
-        isValid = true;
-    }
-
-
-    const newErrors = { ...errors, [field]: !isValid  };
+  const handleBlur = (field: keyof User) => () => {
+    const isValid = validateField(user, field);
+    const newErrors = { ...errors, [field]: !isValid };
+    
     setErrors(newErrors);
     onBur(newErrors);
   };
@@ -32,7 +23,7 @@ const Step2 = ({ user, handleChange, onBur }: StepProps) => {
       <TextField
         label="Country"
         value={user.country}
-        onChange={(e) => handleChange('country', e.target.value)}
+        onChange={(e) => handleChange('country', e.target.value.trim())}
         fullWidth
         margin="normal"
         required
@@ -43,13 +34,11 @@ const Step2 = ({ user, handleChange, onBur }: StepProps) => {
       <Box sx={{ width: '100%', marginTop: '16px' }}>
         <Select
           value={user.gender || 'Male'}
-          onChange={(e) => handleChange('gender', e.target.value)}
+          onChange={(e) => handleChange('gender', e.target.value.trim())}
           displayEmpty
           required
           fullWidth
           inputProps={{ 'aria-label': 'Without label' }}
-          error={errors.gender}
-          onBlur={handleBlur('gender')}
           sx={{ textAlign: 'left' }}
         >
           <MenuItem value="Male">Male</MenuItem>

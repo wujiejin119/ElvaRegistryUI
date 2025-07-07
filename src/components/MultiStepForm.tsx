@@ -6,7 +6,9 @@ import Step3 from './Step3';
 import Step4 from './Step4';
 import { StepErrors, User } from '../types/User';
 import { Box, Button, Card, CardContent, CardHeader, styled } from '@mui/material';
-
+import { useUserService } from '../services/useUserService';
+import ResultPage from './ResultPage';
+import { useUserFieldValidation } from './useUserFieldValidation';
 
 const CenteredBox = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -73,7 +75,13 @@ const MultiStepForm = (props: MultiStepFormProps): JSX.Element => {
     password: '',
   });
 
-  const [pageError, setPageError] = useState(false);
+  const [pageError, setPageError] = useState(true);
+  const [apiError, setApiError] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const { addUser } = useUserService();
+  const { validateStep } = useUserFieldValidation();
 
   const handleChange = (field: keyof User, value: string | File | null) => {
     setUser(prev => ({
@@ -103,28 +111,69 @@ const MultiStepForm = (props: MultiStepFormProps): JSX.Element => {
   };
 
   const prevStep = () => {
+    setPageError(false);
     setStep((prevStep) => (prevStep > 1 ? prevStep - 1 : prevStep));
   };
   const nextStep = () => {
+    let isValid = validateStep(user, step < 4 ? step + 1 : step);
     setStep((prevStep) => (prevStep < 4 ? prevStep + 1 : prevStep));
+    setPageError(!isValid);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();    
-      console.log('Form Submitted:', user);
- 
-      alert('Registration successful!');
-    
+
+  const getErrorMessage = (error: any) => {
+    let errorMessage = 'An unknown error occurred';
+    if (error === null || error === undefined) {
+      return errorMessage;
+    }
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (error.statusText) {
+      errorMessage = error.statusText;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    } else {
+      errorMessage = JSON.stringify(error);
+    }
+
+    return errorMessage;
+
   };
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    let errorMessage = "Unknown error occurred";
+    try {
+      await addUser(user);
+      setDialogMessage("Registration successful!");
+      setApiError(false);
+      setIsSubmitted(true);
+    } catch (error) {
+      errorMessage = 'Error adding user: ' + getErrorMessage(error);
+      setDialogMessage(errorMessage);
+      setApiError(true);
+      setIsSubmitted(true);
+      console.error('Error adding user:', error);
+    }
+  };
+
 
   return (
     <CenteredBox>
       <StyledCard>
         <StyledCardHeader title="Welcome to Sign Up" />
         <StyledCardContent>
-          <StepContentContainer>{renderStep()}</StepContentContainer>
+          <StepContentContainer>
+            {isSubmitted ? (
+              <ResultPage isSuccess={!apiError} message={dialogMessage} />
+            ) : (
+              renderStep()
+            )}
+          </StepContentContainer>
         </StyledCardContent>
-        <StyledButtonContainer>
+        {!isSubmitted && <StyledButtonContainer>
           <Button
             variant="outlined"
             onClick={prevStep}
@@ -138,7 +187,7 @@ const MultiStepForm = (props: MultiStepFormProps): JSX.Element => {
           >
             {step < 4 ? "Next" : "Submit"}
           </Button>
-        </StyledButtonContainer>
+        </StyledButtonContainer>}
       </StyledCard>
     </CenteredBox>
   );

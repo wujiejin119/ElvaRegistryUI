@@ -1,32 +1,20 @@
 import { Box, TextField } from "@mui/material";
 import { StepErrors, StepProps, User } from "../types/User";
 import { useState } from "react";
+import { useUserFieldValidation } from "./useUserFieldValidation";
 
 
 const Step1 = ({ user, handleChange, onBur }: StepProps) => {
   const [errors, setErrors] = useState<StepErrors>({});
+  const { validateField } = useUserFieldValidation();
+  
 
   const handleBlur = (field: keyof User) => () => {
-    let isValid = true;
-
-    switch (field) {
-      case 'firstName':
-        isValid = !!user.firstName;
-        break;
-      case 'lastName':
-        isValid = !!user.lastName;
-        break;
-      case 'dateOfBirth':
-        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        isValid = dateRegex.test(user.dateOfBirth);
-        break;
-      default:
-        isValid = true;
-    }
-
+    const isValid = validateField(user, field);
     const newErrors = { ...errors, [field]: !isValid };
+    
     setErrors(newErrors);
-    onBur(newErrors);
+    onBur(newErrors); 
   };
 
 
@@ -36,7 +24,7 @@ const Step1 = ({ user, handleChange, onBur }: StepProps) => {
       <TextField
         label="First Name*"
         value={user.firstName}
-        onChange={(e) => handleChange('firstName', e.target.value)}
+        onChange={(e) => handleChange('firstName', e.target.value?.trim())}
         fullWidth
         margin="normal"
         onBlur={handleBlur('firstName')}
@@ -46,7 +34,7 @@ const Step1 = ({ user, handleChange, onBur }: StepProps) => {
       <TextField
         label="Last Name*"
         value={user.lastName}
-        onChange={(e) => handleChange('lastName', e.target.value)}
+        onChange={(e) => handleChange('lastName', e.target.value?.trim())}
         fullWidth
         margin="normal"
         onBlur={handleBlur('lastName')}
@@ -57,7 +45,7 @@ const Step1 = ({ user, handleChange, onBur }: StepProps) => {
         label="Date of Birth*"
         type="date"
         value={user.dateOfBirth}
-        onChange={(e) => handleChange('dateOfBirth', e.target.value)}
+        onChange={(e) => handleChange('dateOfBirth', e.target.value?.trim())}
         fullWidth
         margin="normal"
         onBlur={handleBlur('dateOfBirth')}

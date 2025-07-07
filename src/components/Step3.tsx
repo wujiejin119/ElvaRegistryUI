@@ -1,28 +1,19 @@
-import { StepErrors, StepProps } from '../types/User';
+import { StepErrors, StepProps, User } from '../types/User';
 import { Box, TextField } from '@mui/material';
 import React, { useState } from 'react';
+import { useUserFieldValidation } from './useUserFieldValidation';
 
 const Step3 = ({ user, handleChange, onBur }: StepProps) => {
   const [errors, setErrors] = useState<StepErrors>({});
 
-  const handleBlur = (field: keyof typeof user) => () => {
-    let isValid = true;
+  const { validateField } = useUserFieldValidation();
 
-    switch (field) {
-      case 'email':
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        isValid = emailRegex.test(user.email);
-        break;
-      case 'password':
-        isValid = user.password.length >= 8;
-        break;
-      default:
-        isValid = true;
-    }
-
-    const newErrors = { ...errors, [field]: !isValid  };
+  const handleBlur = (field: keyof User) => () => {
+    const isValid = validateField(user, field);
+    const newErrors = { ...errors, [field]: !isValid };
+    
     setErrors(newErrors);
-    onBur(newErrors);
+    onBur(newErrors); 
   };
 
   return (
@@ -30,7 +21,7 @@ const Step3 = ({ user, handleChange, onBur }: StepProps) => {
       <TextField
         label="Email"
         value={user.email}
-        onChange={(e) => handleChange('email', e.target.value)}
+        onChange={(e) => handleChange('email', e.target.value?.trim())}
         fullWidth
         margin="normal"
         required
@@ -42,7 +33,7 @@ const Step3 = ({ user, handleChange, onBur }: StepProps) => {
         label="Password"
         type="password"
         value={user.password}
-        onChange={(e) => handleChange('password', e.target.value)}
+        onChange={(e) => handleChange('password', e.target.value?.trim())}
         fullWidth
         margin="normal"
         required
