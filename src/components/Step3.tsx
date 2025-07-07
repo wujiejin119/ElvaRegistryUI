@@ -28,11 +28,12 @@ const Step3 = ({ user, handleChange, onBur }: StepProps) => {
         onBlur={handleBlur('email')}
         helperText={errors.email ? 'Invalid email format or required' : ''}
         error={errors.email}
+        data-testid="email"
       />
       <TextField
         label="Password"
         type="password"
-        value={user.password}
+        value={user.password} //Todo：encryption
         onChange={(e) => handleChange('password', e.target.value?.trim())}
         fullWidth
         margin="normal"
@@ -40,6 +41,7 @@ const Step3 = ({ user, handleChange, onBur }: StepProps) => {
         onBlur={handleBlur('password')}
         helperText={errors.password ? 'Password must be at least 8 characters' : ''}
         error={errors.password}
+        data-testid="password"
       />
     </Box>
   );

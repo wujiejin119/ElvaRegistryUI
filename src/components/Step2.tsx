@@ -6,7 +6,7 @@ import { useUserFieldValidation } from './useUserFieldValidation';
 
 const Step2 = ({ user, handleChange, onBur }: StepProps) => {
   const [errors, setErrors] = useState<StepErrors>({});
-  const [fileError, setFileError] = useState<string>(''); 
+  const [fileError, setFileError] = useState<string>('');
 
   const { validateField } = useUserFieldValidation();
 
@@ -24,7 +24,7 @@ const Step2 = ({ user, handleChange, onBur }: StepProps) => {
     if (file) {
       if (file.size <= 500 * 1024) { // 500KB
         handleChange('avatar', file);
-        setFileError(''); 
+        setFileError('');
       } else {
         setFileError('File size cannot exceed 500KB');
       }
@@ -44,6 +44,7 @@ const Step2 = ({ user, handleChange, onBur }: StepProps) => {
         onBlur={handleBlur('country')}
         helperText={errors.country ? 'Country is required' : ''}
         error={errors.country}
+        data-testid="country"
       />
       <Box sx={{ width: '100%', marginTop: '16px' }}>
         <Select
@@ -56,7 +57,11 @@ const Step2 = ({ user, handleChange, onBur }: StepProps) => {
           sx={{ textAlign: 'left' }}
           error={errors.gender}
           onBlur={handleBlur('gender')}
+          data-testid="gender"
         >
+          <MenuItem value="" disabled>
+            Gender*
+          </MenuItem>
           <MenuItem value="Male">Male</MenuItem>
           <MenuItem value="Female">Female</MenuItem>
         </Select>
@@ -67,12 +72,12 @@ const Step2 = ({ user, handleChange, onBur }: StepProps) => {
           type="file"
           id="avatar-upload"
           onChange={handleFileChange}
+          data-testid="avatar"
           inputProps={{
-            accept: 'image/*',
-            ariaLabel: 'Upload profile image'
+            accept: 'image/*'
           }}
         />
-        {fileError && <FormHelperText error>{fileError}</FormHelperText>} 
+        {fileError && <FormHelperText error>{fileError}</FormHelperText>}
       </FormControl>
     </Box>
   );

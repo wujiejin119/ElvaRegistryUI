@@ -146,6 +146,7 @@ const MultiStepForm = (props: MultiStepFormProps): JSX.Element => {
     e.preventDefault();
     let errorMessage = "Unknown error occurred";
     try {
+      console.log('Form Submitted:', user);
       await addUserWithAvatar(user);
       setDialogMessage("Registration successful!");
       setApiError(false);
@@ -177,13 +178,15 @@ const MultiStepForm = (props: MultiStepFormProps): JSX.Element => {
           <Button
             variant="outlined"
             onClick={prevStep}
-            disabled={step <= 1}>
+            disabled={step <= 1}
+            data-testid="pervious">
             Previous
           </Button>
           <Button
             variant="contained"
             onClick={step < 4 ? nextStep : handleSubmit}
             disabled={pageError}
+            data-testid="next"
           >
             {step < 4 ? "Next" : "Submit"}
           </Button>

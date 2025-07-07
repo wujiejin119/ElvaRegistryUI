@@ -30,6 +30,7 @@ const Step1 = ({ user, handleChange, onBur }: StepProps) => {
         onBlur={handleBlur('firstName')}
         helperText={errors.firstName ? 'First Name is required' : ''}
         error={errors.firstName}
+        data-testid="firstName"
       />
       <TextField
         label="Last Name*"
@@ -40,6 +41,7 @@ const Step1 = ({ user, handleChange, onBur }: StepProps) => {
         onBlur={handleBlur('lastName')}
         helperText={errors.lastName ? 'Last Name is required' : ''}
         error={errors.lastName}
+       data-testid="lastName"
       />
       <TextField
         label="Date of Birth*"
@@ -54,6 +56,7 @@ const Step1 = ({ user, handleChange, onBur }: StepProps) => {
         }}
         helperText={errors.dateOfBirth ? 'Invalid date format or required' : ''}
         error={errors.dateOfBirth}
+        data-testid="dateOfBirth"
       />
     </Box>
   );

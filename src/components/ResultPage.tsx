@@ -13,8 +13,8 @@ const ResultContainer = styled(Box)(({ theme }) => ({
   height: '100%',
 }));
 
-const ResultText = styled(Typography)<{ $isSuccess: boolean }>(({ theme, $isSuccess }) => ({
-  color: $isSuccess ? 'green' : 'red',
+const ResultText = styled(Typography)<{ isSuccess: boolean }>(({ theme, isSuccess }) => ({
+  color: isSuccess ? 'green' : 'red',
   textAlign: 'center',
   marginBottom: '16px',
 }));
@@ -22,7 +22,7 @@ const ResultText = styled(Typography)<{ $isSuccess: boolean }>(({ theme, $isSucc
 const ResultPage = ({ isSuccess, message }: ResultPageProps) => {
   return (
     <ResultContainer>
-      <ResultText $isSuccess={isSuccess} variant="h6">
+      <ResultText isSuccess={isSuccess} variant="h6" data-testid="resultText">
         {message}
       </ResultText>
     </ResultContainer>
