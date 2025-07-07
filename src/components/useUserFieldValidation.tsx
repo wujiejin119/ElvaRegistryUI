@@ -29,7 +29,7 @@ export const useUserFieldValidation = () => {
     const validateStep = (user: User, step: number): boolean => {
         const stepFields: Record<number, (keyof User)[]> = {
             1: ['firstName', 'lastName', 'dateOfBirth'],
-            2: ['country'],
+            2: ['country', 'gender'],
             3: ['email', 'password'],
         };
 

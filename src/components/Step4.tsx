@@ -19,15 +19,14 @@ interface Step4Props {
 const Step4 = (props: Step4Props): JSX.Element => {
   const { user, handleSubmit } = props;
  
-  const fieldLabels: Record<keyof User, string> = {
+  const fieldLabels: Partial<Record<keyof User, string>> = {
     firstName: 'First Name',
     lastName: 'Last Name',
     dateOfBirth: 'Date of Birth',
     country: 'Country',
     gender: 'Gender',
     email: 'Email',
-    avatar: 'Avatar',
-    password: 'Password',
+    password: 'Password'
   };
 
   return (

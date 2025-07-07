@@ -80,7 +80,7 @@ const MultiStepForm = (props: MultiStepFormProps): JSX.Element => {
   const [dialogMessage, setDialogMessage] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const { addUser } = useUserService();
+  const { addUserWithAvatar } = useUserService();
   const { validateStep } = useUserFieldValidation();
 
   const handleChange = (field: keyof User, value: string | File | null) => {
@@ -146,7 +146,7 @@ const MultiStepForm = (props: MultiStepFormProps): JSX.Element => {
     e.preventDefault();
     let errorMessage = "Unknown error occurred";
     try {
-      await addUser(user);
+      await addUserWithAvatar(user);
       setDialogMessage("Registration successful!");
       setApiError(false);
       setIsSubmitted(true);

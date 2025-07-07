@@ -4,19 +4,29 @@ const API_URL = 'http://localhost:5289/api/users';
 
 export const useUserService = () => {
 
-  const addUser = async (user: Omit<User, 'avatar'>): Promise<User> => {
+  const addUserWithAvatar = async (user: User): Promise<User> => {
+    const formData = new FormData();
+
+    for (const [key, value] of Object.entries(user)) {
+      if (key !== 'avatar') {
+        formData.append(key, value);
+      }
+    }
+
+    if (user.avatar) {
+      formData.append('avatar', user.avatar);
+    }
+
     const res = await fetch(API_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(user),
+      body: formData,
     });
-    if (!res.ok) throw new Error('Failed to add user');
+
+    if (!res.ok) throw new Error('Failed to add user with avatar');
     return res.json();
   };
 
   return {
-    addUser
+    addUserWithAvatar
   };
 };
