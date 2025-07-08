@@ -19,7 +19,8 @@ export const useUserFieldValidation = () => {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(user.email || '');
             case 'password':
-                return user.password?.length >= 8 || false;
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+                return passwordRegex.test(user.password);
             default:
                 return true;
         }
@@ -37,7 +38,14 @@ export const useUserFieldValidation = () => {
         return fieldsToValidate.every(field => validateField(user, field));
     };
 
-    return { validateField, validateStep };
+    const validateFields = (user: User, fields: (keyof User)[]): boolean => 
+        !fields.some(field => !validateField(user, field));
+
+    return {
+         validateField,
+         validateStep,
+         validateFields
+        };
 };
 
 

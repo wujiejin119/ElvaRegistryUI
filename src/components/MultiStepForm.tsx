@@ -90,9 +90,9 @@ const MultiStepForm = (props: MultiStepFormProps): JSX.Element => {
     }));
   };
 
-  const onBur = (errors: StepErrors) => {
-    const hasError = Object.values(errors).some(value => value === true);
-    setPageError(hasError);
+  const onBur = () => {
+    let isValid = validateStep(user, step);
+    setPageError(!isValid);
   };
 
   const renderStep = () => {

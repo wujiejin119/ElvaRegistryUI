@@ -14,7 +14,7 @@ const Step1 = ({ user, handleChange, onBur }: StepProps) => {
     const newErrors = { ...errors, [field]: !isValid };
     
     setErrors(newErrors);
-    onBur(newErrors); 
+    onBur(); 
   };
 
 
@@ -28,6 +28,7 @@ const Step1 = ({ user, handleChange, onBur }: StepProps) => {
         fullWidth
         margin="normal"
         onBlur={handleBlur('firstName')}
+        inputProps={{ maxLength: 255 }} 
         helperText={errors.firstName ? 'First Name is required' : ''}
         error={errors.firstName}
         data-testid="firstName"
@@ -39,6 +40,7 @@ const Step1 = ({ user, handleChange, onBur }: StepProps) => {
         fullWidth
         margin="normal"
         onBlur={handleBlur('lastName')}
+        inputProps={{ maxLength: 255 }} 
         helperText={errors.lastName ? 'Last Name is required' : ''}
         error={errors.lastName}
         data-testid="lastName"

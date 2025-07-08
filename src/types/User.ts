@@ -13,7 +13,7 @@ interface User {
 interface StepProps {
   user: User;
   handleChange: (field: keyof User, value: string | File | null) => void;
-  onBur: (errors:StepErrors) => void;
+  onBur: () => void;
 }
 
 

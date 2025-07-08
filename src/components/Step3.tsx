@@ -1,6 +1,6 @@
 import { StepErrors, StepProps, User } from '../types/User';
 import { Box, TextField } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUserFieldValidation } from '../hooks/useUserFieldValidation';
 
 const Step3 = ({ user, handleChange, onBur }: StepProps) => {
@@ -11,9 +11,9 @@ const Step3 = ({ user, handleChange, onBur }: StepProps) => {
   const handleBlur = (field: keyof User) => () => {
     const isValid = validateField(user, field);
     const newErrors = { ...errors, [field]: !isValid };
-    
+
     setErrors(newErrors);
-    onBur(newErrors); 
+    onBur();
   };
 
   return (
@@ -24,8 +24,8 @@ const Step3 = ({ user, handleChange, onBur }: StepProps) => {
         onChange={(e) => handleChange('email', e.target.value?.trim())}
         fullWidth
         margin="normal"
-        required
         onBlur={handleBlur('email')}
+        inputProps={{ maxLength: 255 }} 
         helperText={errors.email ? 'Invalid email format or required' : ''}
         error={errors.email}
         data-testid="email"
@@ -33,13 +33,14 @@ const Step3 = ({ user, handleChange, onBur }: StepProps) => {
       <TextField
         label="Password"
         type="password"
-        value={user.password} //Todo：encryption
+        value={user.password} //Todo：password confirm twice
         onChange={(e) => handleChange('password', e.target.value?.trim())}
         fullWidth
-        margin="normal"
-        required
+        margin="normal"        
+        autoComplete="new-password" 
         onBlur={handleBlur('password')}
-        helperText={errors.password ? 'Password must be at least 8 characters' : ''}
+        inputProps={{ maxLength: 255 }} 
+        helperText={errors.password ? 'At least 8 characters, with uppercase, lowercase, numbers.' : ''}
         error={errors.password}
         data-testid="password"
       />

@@ -15,7 +15,7 @@ const Step2 = ({ user, handleChange, onBur }: StepProps) => {
     const newErrors = { ...errors, [field]: !isValid };
 
     setErrors(newErrors);
-    onBur(newErrors);
+    onBur();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,6 +41,7 @@ const Step2 = ({ user, handleChange, onBur }: StepProps) => {
         fullWidth
         margin="normal"
         onBlur={handleBlur('country')}
+        inputProps={{ maxLength: 255 }} 
         helperText={errors.country ? 'Country is required' : ''}
         error={errors.country}
         data-testid="country"
